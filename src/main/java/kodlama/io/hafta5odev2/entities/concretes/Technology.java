@@ -29,4 +29,5 @@ public class Technology {
     @ManyToOne
     @JoinColumn(name="languageId")
     private Language language;
+    
 }

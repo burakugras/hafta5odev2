@@ -1,7 +1,7 @@
 package kodlama.io.hafta5odev2.business.concretes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -9,16 +9,17 @@ import kodlama.io.hafta5odev2.business.abstracts.LanguageService;
 import kodlama.io.hafta5odev2.business.requests.CreateLanguageRequest;
 import kodlama.io.hafta5odev2.business.requests.UpdateLanguageRequest;
 import kodlama.io.hafta5odev2.business.responses.GetAllLanguageResponses;
+import kodlama.io.hafta5odev2.business.responses.GetByIdLanguageResponse;
+import kodlama.io.hafta5odev2.core.utilities.mappers.ModelMapperService;
 import kodlama.io.hafta5odev2.dataAccess.abstracts.LanguageRepository;
 import kodlama.io.hafta5odev2.entities.concretes.Language;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class LanguageManager implements LanguageService{
     private LanguageRepository languageRepository;
-
-    public LanguageManager(LanguageRepository languageRepository){
-        this.languageRepository=languageRepository;
-    }
+    private ModelMapperService modelMapperService;    
 
     @Override
     public void add(CreateLanguageRequest createLanguageRequest)throws Exception {
@@ -30,9 +31,8 @@ public class LanguageManager implements LanguageService{
             //burada getAllLanguages metodunda yaptığımız gibi bütün isimleri başka bir ArrayList'e alıp oradan karşılaştırma yapabiliriz. 
         }
         else{
-            Language language=new Language();
-            language.setLanguageName(createLanguageRequest.getLanguageName());
-            languageRepository.save(language);
+            Language language=this.modelMapperService.forRequest().map(createLanguageRequest, Language.class);
+            this.languageRepository.save(language);
         }
     }
 
@@ -44,16 +44,10 @@ public class LanguageManager implements LanguageService{
     @Override
     public List<GetAllLanguageResponses> getAllLanguages() {
         List<Language> languages=languageRepository.findAll();
-        List<GetAllLanguageResponses> languageResponses=new ArrayList<>();        
-
-        for(Language languageElement : languages){
-            GetAllLanguageResponses responseItem=new GetAllLanguageResponses();
-            responseItem.setLanguageId(languageElement.getLanguageId());
-            responseItem.setLanguageName(languageElement.getLanguageName());
-
-            languageResponses.add(responseItem);
-
-        }
+        
+        List<GetAllLanguageResponses> languageResponses=languages.stream()
+        .map(language->this.modelMapperService.forResponse()
+        .map(languages, GetAllLanguageResponses.class)).collect(Collectors.toList());
         
         return languageResponses;
     }
@@ -66,9 +60,17 @@ public class LanguageManager implements LanguageService{
             throw new Exception("Bu isimde bir programlama dili zaten bulunuyor.");
         }
         else{
-            Language language=languageRepository.findById(updateLanguageRequest.getLanguageId()).orElseThrow(()-> new Exception("Id bulunmuyor"));
-            language.setLanguageName(updateLanguageRequest.getUpdatedLanguageName());
-            languageRepository.save(language);
+            Language language=this.modelMapperService.forRequest().map(updateLanguageRequest, Language.class);
+            this.languageRepository.save(language);
         }
+    }
+
+    @Override
+    public GetByIdLanguageResponse getByIdLanguageResponse(int languageId) {
+        Language language=this.languageRepository.findById(languageId).orElseThrow();
+
+        GetByIdLanguageResponse response=this.modelMapperService.forResponse().map(language, GetByIdLanguageResponse.class);
+
+        return response;
     }
 }

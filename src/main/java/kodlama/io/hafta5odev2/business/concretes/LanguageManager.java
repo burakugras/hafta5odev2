@@ -38,7 +38,7 @@ public class LanguageManager implements LanguageService{
 
     @Override
     public void deleteLanguage(int languageId) {
-        languageRepository.deleteById(languageId);
+        this.languageRepository.deleteById(languageId);
     }
     
     @Override
@@ -47,7 +47,7 @@ public class LanguageManager implements LanguageService{
         
         List<GetAllLanguageResponses> languageResponses=languages.stream()
         .map(language->this.modelMapperService.forResponse()
-        .map(languages, GetAllLanguageResponses.class)).collect(Collectors.toList());
+        .map(language, GetAllLanguageResponses.class)).collect(Collectors.toList());
         
         return languageResponses;
     }

@@ -52,7 +52,7 @@ public class TechnologyManager implements TechnologyService {
 
     @Override
     public void deleteTechnology(int technologyId) {
-        technologyRepository.deleteById(technologyId);
+        this.technologyRepository.deleteById(technologyId);
     }
     
     @Override
@@ -61,7 +61,7 @@ public class TechnologyManager implements TechnologyService {
         
         List<GetAllTechnologyResponses> technologyResponses=technologies.stream()
         .map(technology->this.modelMapperService.forResponse()
-        .map(technologies, GetAllTechnologyResponses.class)).collect(Collectors.toList());
+        .map(technology, GetAllTechnologyResponses.class)).collect(Collectors.toList());
 ;
         return technologyResponses;
     }

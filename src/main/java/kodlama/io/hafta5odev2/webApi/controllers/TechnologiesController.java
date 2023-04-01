@@ -32,9 +32,9 @@ public class TechnologiesController {
         technologyService.add(createTechnologyRequest);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable int tecnologyId){
-        technologyService.deleteTechnology(tecnologyId);
+    @DeleteMapping("/{technologyId}")
+    public void delete(@PathVariable int technologyId){
+        technologyService.deleteTechnology(technologyId);
     }
 
     @PutMapping

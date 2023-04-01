@@ -33,7 +33,7 @@ public class LanguagesController {
         languageService.add(createLanguageRequest);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{languageId}")
     public void delete(@PathVariable int languageId){
         languageService.deleteLanguage(languageId);
     }
